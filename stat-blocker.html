@@ -1,0 +1,1081 @@
+<!--
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Monster Card</title>
+
+<script>
+var version = "0.1.0";
+</script>
+
+
+<script>
+// this is to get compat with a wide variety of browsers for saving files
+// see https://github.com/eligrey/FileSaver.js/blob/master/dist/FileSaver.min.js
+(function(a,b){if("function"==typeof define&&define.amd)define([],b);else if("undefined"!=typeof exports)b();else{b(),a.FileSaver={exports:{}}.exports}})(this,function(){"use strict";function b(a,b){return"undefined"==typeof b?b={autoBom:!1}:"object"!=typeof b&&(console.warn("Depricated: Expected third argument to be a object"),b={autoBom:!b}),b.autoBom&&/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(a.type)?new Blob(["\uFEFF",a],{type:a.type}):a}function c(b,c,d){var e=new XMLHttpRequest;e.open("GET",b),e.responseType="blob",e.onload=function(){a(e.response,c,d)},e.onerror=function(){console.error("could not download file")},e.send()}function d(a){var b=new XMLHttpRequest;return b.open("HEAD",a,!1),b.send(),200<=b.status&&299>=b.status}function e(a){try{a.dispatchEvent(new MouseEvent("click"))}catch(c){var b=document.createEvent("MouseEvents");b.initMouseEvent("click",!0,!0,window,0,0,0,80,20,!1,!1,!1,!1,0,null),a.dispatchEvent(b)}}var f="object"==typeof window&&window.window===window?window:"object"==typeof self&&self.self===self?self:"object"==typeof global&&global.global===global?global:void 0,a=f.saveAs||"object"!=typeof window||window!==f?function(){}:"download"in HTMLAnchorElement.prototype?function(b,g,h){var i=f.URL||f.webkitURL,j=document.createElement("a");g=g||b.name||"download",j.download=g,j.rel="noopener","string"==typeof b?(j.href=b,j.origin===location.origin?e(j):d(j.href)?c(b,g,h):e(j,j.target="_blank")):(j.href=i.createObjectURL(b),setTimeout(function(){i.revokeObjectURL(j.href)},4E4),setTimeout(function(){e(j)},0))}:"msSaveOrOpenBlob"in navigator?function(f,g,h){if(g=g||f.name||"download","string"!=typeof f)navigator.msSaveOrOpenBlob(b(f,h),g);else if(d(f))c(f,g,h);else{var i=document.createElement("a");i.href=f,i.target="_blank",setTimeout(function(){e(i)})}}:function(a,b,d,e){if(e=e||open("","_blank"),e&&(e.document.title=e.document.body.innerText="downloading..."),"string"==typeof a)return c(a,b,d);var g="application/octet-stream"===a.type,h=/constructor/i.test(f.HTMLElement)||f.safari,i=/CriOS\/[\d]+/.test(navigator.userAgent);if((i||g&&h)&&"object"==typeof FileReader){var j=new FileReader;j.onloadend=function(){var a=j.result;a=i?a:a.replace(/^data:[^;]*;/,"data:attachment/file;"),e?e.location.href=a:location=a,e=null},j.readAsDataURL(a)}else{var k=f.URL||f.webkitURL,l=k.createObjectURL(a);e?e.location=l:location.href=l,e=null,setTimeout(function(){k.revokeObjectURL(l)},4E4)}};f.saveAs=a.saveAs=a,"undefined"!=typeof module&&(module.exports=a)});
+</script>
+
+<style type='text/css'>
+h1, h2 {
+  text-transform: capitalize;
+  font-variant: small-caps;
+  font-family: serif;
+  font-style: normal;
+  font-weight: lighter;
+}
+
+textarea {
+  resize: none;
+}
+
+
+.wrapper {
+  /* 8in at 96dpi */
+  xwidth: 768px;
+  /* 4in at 96dpi */
+  width: 372px;
+
+  min-height: 577px;
+
+  border: 1px solid lightgrey;
+}
+
+.wrapper-out,
+.wrapper-out2 {
+  width: 372px;
+  xmin-height: 577px;
+  height: 577px;
+  border: 1px solid lightgrey;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  position: absolute;
+  top: 60px;
+  left: 452px;
+
+  xdisplay: none;
+}
+
+.wrapper-out2 {
+  top: 650px;
+}
+
+.wrapper-json {
+  width: 372px;
+  height: 577px;
+
+  position: absolute;
+  top: 60px;
+  xleft: 844px;
+  left: 452px;
+
+  display: none;
+}
+
+.wrapper-menu {
+  position: absolute;
+  top: 40px;
+  left: 452px;
+}
+
+.wrapper-menu button {
+  padding: 3px 10px;
+  border: 0;
+  font-size: 8px;
+  background-color: lightgray;
+}
+.wrapper-menu button.selected {
+  background-color: white;
+  border: 1px solid lightgray;
+}
+
+.wrapper-json textarea {
+  width: 100%;
+  height: 100%;
+  border: 0 none;
+  xbackground-color: gainsboro;
+  border: 1px solid darkgray;
+
+  resize: none;
+  outline: none;
+
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.card {
+  /* 6in at 96dpi */
+  xheight: 576px;
+
+  font-family: verdana;
+  font-size: 11px;
+
+  xcolumns: 372px;
+  x-moz-column-rule: thin solid lightgrey;
+  xcolumn-rule: thin solid lightgrey;
+  xcolumn-fill: auto;
+
+  padding: 5px;
+}
+.card h1,
+.card h2 {
+  margin-bottom: 5px;
+}
+.card h1 {
+  margin-top: 5px;
+}
+.card h2 {
+  border-bottom: 1px solid lightgrey;
+  margin-top: 15px;
+}
+
+.desc {
+  font-style: italic;
+}
+.desc .type::after,
+.desc .alignment::after {
+  content: ", ";
+}
+.desc .challenge {
+  font-weight: bold;
+}
+
+.phys,
+.attribs {
+  border-top: 4px solid lightgrey;
+  border-bottom: 4px solid lightgrey;
+  margin-top: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.stats {
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 360px;
+  text-align: center;
+}
+
+.abils,
+.actions,
+.reactions,
+.legendary-actions {
+  margin-top: 10px;
+}
+
+.phys div:not(:first-child),
+.attribs div:not(:first-child),
+.abils div:not(:first-child) {
+  margin-top: 2px;
+}
+.actions div:not(:first-child),
+.reactions div:not(:first-child),
+.legendary-actions div:not(:first-child) {
+  margin-top: 8px;
+}
+
+
+@media all {
+  html,
+  body {
+    padding: 0;
+    margin: 30px;
+  }
+}
+
+@media print {
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  footer,
+  .page-menu,
+  .wrapper,
+  .wrapper-menu,
+  .wrapper-json {
+    display: none;
+  }
+
+  .wrapper-out {
+    break-after: page;
+    page-break-after: always;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: auto;
+    width: 392px;
+  }
+  .wrapper-out2 {
+    float: right;
+    position: relative;
+    top: 0;
+    left: auto;
+    right: -2px;
+    width: 392px;
+  }
+}
+
+
+
+.cardfield {
+  border: 0;
+  padding: 5px 0;
+  background-color: lavender;
+
+  font-size: 11px;
+  font-family: verdana;
+}
+
+.card .card_title {
+  width: 100%;
+
+  border: 0;
+  padding: 5px 0;
+  background-color: lavender;
+
+  font-weight: lighter;
+  font-size: larger;
+  font-variant: small-caps;
+  font-family: serif;
+  font-style: normal;
+  text-transform: capitalize;
+}
+
+.card .card_type,
+.card .card_alignment,
+.card .card_challenge {
+  font-style: italic;
+}
+
+.card .card_type {
+  width: 180px;
+}
+
+.card .card_alignment {
+  width: 85px;
+}
+
+.card .card_challenge {
+  width: 80px;
+}
+
+
+.card .keyval.key {
+  font-weight: bold;
+  width: 342px;
+}
+
+.card .keyval.val {
+  width: 362px;
+  height: 28px;
+}
+
+.card .delbutton {
+  width: 13px;
+  height: 19px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background-color: white;
+}
+
+.card .delbutton:hover {
+  color: red;
+}
+
+
+.card .menu {
+  text-align: right;
+}
+
+button.add {
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 5px;
+  font-size: 8px;
+  background-color: lightgray;
+}
+
+
+.card .ability_score {
+  width: 50px;
+  text-align: center;
+}
+
+.card .spells_out {
+  margin-top: 5px;
+}
+.card .spells_out strong {
+  font-style: italic;
+}
+.card .spells_out_list {
+  margin-left: 10px;
+}
+.card .spells_out_list strong {
+  font-style: italic;
+  font-weight: normal;
+}
+
+.card .spells_description {
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.card .legendary_description {
+  width: 100%;
+  height: 100px;
+}
+
+.card .notes {
+  width: 100%;
+  height: 150px;
+}
+
+
+.page-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.page-menu button {
+  font-size: x-small;
+}
+.page-menu .notes {
+  font-size: xx-small;
+}
+
+
+#errormsg {
+  position: absolute;
+  top: 3px;
+  left: 300px;
+  font-style: italic;
+  color: red;
+  display: none;
+}
+
+
+footer {
+  text-align: center;
+  margin-top: 50px;
+  font-size: x-small;
+}
+
+</style>
+</head>
+<body>
+  <div id='errormsg'></div>
+  <div class='page-menu'>
+    <div>
+      <button type='button' id='newcard' class='newcard' value='newcard'>New</button>
+      <button type='button' id='savejson' class='savebutton' value='save'>Save</button>
+      <input type='file' id='loadjsonfile' style='display:none;' accept='application/json' />
+      <button type='button' id='loadjson' class='loadbutton' value='load'>Load</button>
+      <button type='button' id='print' class='print' value='print' onclick='window.print();'>Print</button>
+    </div>
+    <div class='notes'>
+      <em>Save</em> will prompt for saving a JSON file representing the card.
+      <br/>
+      <em>Load</em> will prompt for loading a JSON file representing the card.
+      <br/>
+      <em>Print</em> will let you print to paper or PDF.
+    </div>
+  </div>
+  <div class='wrapper'>
+    <div class='card'>
+      <form>
+        <div class='desc'>
+          <h1><input id='desc_title' type='text' class='cardfield card_title' placeholder='Title' /></h1>
+          <span class='type'><input id='desc_type' type='text' class='cardfield card_type' placeholder='Type' /></span>
+          <span class='alignment'><input id='desc_align' type='text' class='cardfield card_alignment' placeholder='Align' /></span>
+          <span class='challenge'><input id='desc_cr' type='text' class='cardfield card_challenge' placeholder='CR' /></span>
+        </div>
+        <div class='phys'>
+          <div id='phys_values' class='values'></div>
+          <div class='menu'>
+            <button type='button' id='phys_add' class='add' value='pa_add'>ADD ANOTHER</button>
+          </div>
+        </div>
+        <table class='stats'>
+          <tr>
+            <th>STR</th>
+            <th>DEX</th>
+            <th>CON</th>
+            <th>INT</th>
+            <th>WIS</th>
+            <th>CHA</th>
+          </tr>
+          <tr>
+            <td><input id='strength' type='text' class='cardfield ability_score' placeholder='STR' /></td>
+            <td><input id='dexterity' type='text' class='cardfield ability_score' placeholder='DEX' /></td>
+            <td><input id='constitution' type='text' class='cardfield ability_score' placeholder='CON' /></td>
+            <td><input id='intelligence' type='text' class='cardfield ability_score' placeholder='INT' /></td>
+            <td><input id='wisdom' type='text' class='cardfield ability_score' placeholder='WIS' /></td>
+            <td><input id='charisma' type='text' class='cardfield ability_score' placeholder='CHR' /></td>
+          </td>
+        </table>
+        <div class='attribs'>
+          <div id='attr_values' class='values'></div>
+          <div class='menu'>
+            <button type='button' id='attr_add' class='add' value='a_add'>ADD ANOTHER</button>
+          </div>
+        </div>
+        <div class='abils'>
+          <div id='abil_values' class='values'></div>
+          <div class='menu'>
+            <button type='button' id='abil_add' class='add' value='ab_add'>ADD ANOTHER</button>
+          </div>
+        </div>
+        <div class='spells'>
+          <div><strong>Spellcasting</strong></div>
+          <div class='desc'><textarea id='spells_description' class='cardfield spells_description' placeholder='Spells Description'></textarea></div>
+          <div id='spell_values' class='values'></div>
+          <div class='menu'>
+            <button type='button' id='spell_add' class='add' value='sp_add'>ADD ANOTHER</button>
+          </div>
+        </div>
+        <h2>Actions</h2>
+        <div class='actions'>
+          <div id='action_values' class='values'></div>
+          <div class='menu'>
+            <button type='button' id='action_add' class='add' value='ac_add'>ADD ANOTHER</button>
+          </div>
+        </div>
+        <h2>Reactions</h2>
+        <div class='reactions'>
+          <div id='reaction_values' class='values'></div>
+          <div class='menu'>
+            <button type='button' id='reaction_add' class='add' value='r_add'>ADD ANOTHER</button>
+          </div>
+        </div>
+        <h2>Legendary Actions</h2>
+        <div class='legendary'>
+          <div class='desc'><textarea id='legendary_description' class='cardfield legendary_description' placeholder='Legendary Description'></textarea></div>
+          <div class='legendary-actions'>
+            <div id='legendaryaction_values' class='values'></div>
+            <div class='menu'>
+              <button type='button' id='legendaryaction_add' class='add' value='la_add'>ADD ANOTHER</button>
+            </div>
+          </div>
+        </div>
+        <h2>Description/Notes</h2>
+        <div class='description_notes'>
+          <div class='desc'><textarea id='description_notes' class='cardfield notes' placeholder='Description/Notes'></textarea></div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class='wrapper-menu'>
+    <button id='showcard' type='button' class='selected'>Card</button>
+    <button id='showjson' type='button'>JSON</button>
+  </div>
+  <div class='wrapper-out'>
+    <div class='card'>
+      <div class='desc'>
+        <h1 class='desc_title_out'>Title</h1>
+        <span class='desc_type_out type'>Type</span>
+        <span class='desc_align_out alignment'>Alignment</span>
+        <span class='desc_cr_out challenge'>CR</span>
+      </div>
+      <div class='phys_out phys'>
+        <div>
+          <strong>Physical</strong>
+          properties
+        </div>
+      </div>
+      <table class='stats'>
+        <tr>
+          <th>STR</th>
+          <th>DEX</th>
+          <th>CON</th>
+          <th>INT</th>
+          <th>WIS</th>
+          <th>CHA</th>
+        </tr>
+        <tr>
+          <td class='str_out'>10</td>
+          <td class='dex_out'>10</td>
+          <td class='con_out'>10</td>
+          <td class='int_out'>10</td>
+          <td class='wis_out'>10</td>
+          <td class='cha_out'>10</td>
+        </td>
+      </table>
+      <div class='attrs_out attribs'>
+        <div>
+          <strong>Attribute</strong>
+          based properties
+        </div>
+      </div>
+      <div class='abils_out abils'>
+        <div>
+          <strong>Ability</strong>
+          based properties
+        </div>
+      </div>
+      <div class='spells_out_wrapper spells'>
+        <div class='spells_description_out_wrapper'><strong>Spellcasting.</strong> <span class='spells_description_out'></span></div>
+        <div class='spells_out spells_out_list'>
+          <div>
+            <strong>Spell</strong>
+            based properties
+          </div>
+        </div>
+      </div>
+      <h2 class='actions_out_hdr'>Actions</h2>
+      <div class='actions_out actions'>
+        <div>
+          <strong>Actions</strong>
+          available to monster
+        </div>
+      </div>
+      <h2 class='reactions_out_hdr'>Reactions</h2>
+      <div class='reactions_out reactions'>
+        <div>
+          <strong>Reactions</strong>
+          available to monster
+        </div>
+      </div>
+      <h2 class='legendary_out_hdr'>Legendary Actions</h2>
+      <div class='legendary_out legendary'>
+        <div class='legendary_description_out desc'>Legendary action description</div>
+        <div class='legendary_actions_out legendary-actions'>
+          <div>
+            <strong>Legendary Actions</strong>
+            available to monster
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='wrapper-out2'></div>
+  <div class='wrapper-json'>
+    <textarea id='jsonoutput' readonly></textarea>
+  </div>
+
+  <footer>
+    <div><em><strong>Stat Block Cards</strong> for 5e</em> version <span id='theversion'></span></div>
+    <div>Written and developed by <em><a href='https://joelkleier.com/'>Joel Kleier</a></em></div>
+    <div>Find this utilitie useful? Want to encourage me to improvement? Feel free to throw a few bones my way for beer money! <a href='https://paypal.me/joelkleier'>paypal.me/joelkleier</a></div>
+    <div>The code behind the scenes is <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>Open Source Software (GPLv3)</a>, find it's source code at <a href='https://github.com/zombified/stat-blocker'>github.com/zombified/stat-blocker</a></div>
+  </footer>
+
+
+<script>
+/*
+
+  1. mirror card html (remove id's from second?)
+  2. get a list of separate elements that are hide-able from top to bottom
+  3. on top card hide one item from the end and check scrollHeight > innerHeight until false
+  4. on bottom card hide elements in list not hidden in step 3
+  5. print break between cards + absolute positioning left/right for back to back printing
+
+*/
+
+function activate_tab(tabname) {
+  let htmlcard = document.getElementsByClassName('wrapper-out')[0]
+  let jsoncard = document.getElementsByClassName('wrapper-json')[0]
+
+  htmlcard.style.display = 'none';
+  jsoncard.style.display = 'none';
+
+  showcard.className = '';
+  showjson.className = '';
+
+  if(tabname == 'card') {
+    htmlcard.style.display = 'block';
+    showcard.className = 'selected';
+  }
+  else if(tabname == 'json') {
+    jsoncard.style.display = 'block';
+    showjson.className = 'selected';
+  }
+}
+
+showcard.onclick = function(event) { activate_tab('card'); };
+showjson.onclick = function(event) { activate_tab('json'); };
+
+
+function add_keyvalue(valsel, classpre, idpre, keyplaceholder, defaultkey, defaultval) {
+  let dkey = defaultkey || '';
+  let dval = defaultval || '';
+  let num = valsel.getElementsByClassName('key').length;
+  let html = `
+            <div>
+              <input type='text' class='cardfield keyval key ${classpre}_name' id='${idpre}_name_${num}' placeholder='${keyplaceholder}' value='${dkey}' />
+              <button class='delbutton' type='button'>&CircleTimes;</button>
+              <textarea class='cardfield keyval val ${classpre}_val' id='${idpre}_val_${num}' placeholder='Description'>${dval}</textarea>
+            </div>
+  `;
+  valsel.insertAdjacentHTML('beforeend', html);
+  let keyvals = valsel.getElementsByClassName('keyval');
+  for(let i=0; i<keyvals.length; i++) {
+    let el = keyvals[i]
+    el.onchange = function(event) { update_json(); update_card(); };
+  }
+  let delbtns = valsel.getElementsByClassName('delbutton');
+  for(let i=0; i<delbtns.length; i++) {
+    let el = delbtns[i];
+    el.onclick = function(event) {
+      event.target.parentNode.remove();
+      update_json();
+      update_card();
+    };
+  }
+}
+
+let phys_add = document.getElementById('phys_add');
+let phys_values = document.getElementById('phys_values');
+add_keyvalue(phys_values, 'phys_attr', 'pa', 'Physical Attribute', 'Armor Class', '10');
+add_keyvalue(phys_values, 'phys_attr', 'pa', 'Physical Attribute', 'Hit Points');
+add_keyvalue(phys_values, 'phys_attr', 'pa', 'Physical Attribute', 'Speed', '30 ft');
+phys_add.onclick = function(event) { add_keyvalue(phys_values, 'phys_attr', 'pa', 'Physical Attribute'); };
+
+let attrib_add = document.getElementById('attr_add');
+let attrib_values = document.getElementById('attr_values');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Saving Throws');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Skills');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Damage Vulnerabilities');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Damage Resistances');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Damage Immunities');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Condition Immunities');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Senses');
+add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', 'Languages');
+attrib_add.onclick = function(event) { add_keyvalue(attrib_values, 'attr', 'a', 'Attribute'); };
+
+let abil_add = document.getElementById('abil_add');
+let abil_values = document.getElementById('abil_values');
+add_keyvalue(abil_values, 'abils', 'ab', 'Ability');
+abil_add.onclick = function(event) { add_keyvalue(abil_values, 'abils', 'ab', 'Ability'); };
+
+let spell_add = document.getElementById('spell_add');
+let spell_values = document.getElementById('spell_values');
+add_keyvalue(spell_values, 'spells', 'sp', 'Level');
+spell_add.onclick = function(event) { add_keyvalue(spell_values, 'spells', 'sp', 'Level'); };
+
+let action_add = document.getElementById('action_add');
+let action_values = document.getElementById('action_values');
+add_keyvalue(action_values, 'action', 'ac', 'Action');
+action_add.onclick = function(event) { add_keyvalue(action_values, 'action', 'ac', 'Action'); };
+
+let reaction_add = document.getElementById('reaction_add');
+let reaction_values = document.getElementById('reaction_values');
+add_keyvalue(reaction_values, 'reaction', 'r', 'Reaction');
+reaction_add.onclick = function(event) { add_keyvalue(reaction_values, 'reaction', 'r', 'Reaction'); };
+
+let legendaryaction_add = document.getElementById('legendaryaction_add');
+let legendaryaction_values = document.getElementById('legendaryaction_values');
+add_keyvalue(legendaryaction_values, 'la', 'la', 'Legendary Action');
+legendaryaction_add.onclick = function(event) { add_keyvalue(legendaryaction_values, 'la', 'la', 'Legendary Action'); };
+
+
+function get_json() {
+  let g = function(id) { return document.getElementById(id).value; };
+  let card = {
+    title: g('desc_title'),
+    type: g('desc_type'),
+    align: g('desc_align'),
+    cr: g('desc_cr'),
+    phys: [],
+    strength: g('strength'),
+    dexterity: g('dexterity'),
+    constitution: g('constitution'),
+    intelligence: g('intelligence'),
+    wisdom: g('wisdom'),
+    charisma: g('charisma'),
+    attrs: [],
+    abils: [],
+    spells: [],
+    spells_description: g('spells_description'),
+    actions: [],
+    reactions: [],
+    legendary_description: g('legendary_description'),
+    legendary_actions: [],
+    description_notes: g('description_notes')
+  };
+  let l = function(cls, arrname) {
+    let els = document.getElementsByClassName(cls);
+    for(let i=0; i<els.length; i++) {
+      let keyval = g(els[i].id);
+      let valval = g(els[i].id.replace('name', 'val'));
+      if(keyval.length <= 0 && valval.length <= 0) {
+        continue;
+      }
+      card[arrname].push({key:keyval, val:valval});
+    }
+  };
+  l('phys_attr_name', 'phys');
+  l('attr_name', 'attrs');
+  l('abils_name', 'abils');
+  l('spells_name', 'spells');
+  l('action_name', 'actions');
+  l('reaction_name', 'reactions');
+  l('la_name', 'legendary_actions');
+
+  return JSON.stringify(card, null, 4);
+}
+
+function update_json() {
+  let datastr = get_json();
+  document.getElementById('jsonoutput').value = datastr;
+  // save json to local storage
+  localStorage.setItem('jsonoutput', datastr);
+}
+
+function show_error(str) {
+  errormsg.style.display = "block";
+  errormsg.innerText = str;
+}
+
+function update_form() {
+  let data;
+  try {
+    data = JSON.parse(jsonoutput.value);
+  }
+  catch(e) {
+    show_error("there's a syntax error in your json!");
+    return;
+  }
+
+  desc_title.value = data.title;
+  desc_type.value = data.type;
+  desc_align.value = data.align;
+  desc_cr.value = data.cr;
+  phys_values.innerHTML = "";
+  for(let i=0; i<data.phys.length; i++) {
+    add_keyvalue(phys_values, 'phys_attr', 'pa', 'Physical Attribute', data.phys[i].key, data.phys[i].val);
+  }
+  strength.value = data.strength;
+  dexterity.value = data.dexterity;
+  constitution.value = data.constitution;
+  intelligence.value = data.intelligence;
+  wisdom.value = data.wisdom;
+  charisma.value = data.charisma;
+  attr_values.innerHTML = "";
+  for(let i=0; i<data.attrs.length; i++) {
+    add_keyvalue(attrib_values, 'attr', 'a', 'Attribute', data.attrs[i].key, data.attrs[i].val);
+  }
+  abil_values.innerHTML = "";
+  for(let i=0; i<data.abils.length; i++) {
+    add_keyvalue(abil_values, 'abils', 'ab', 'Ability', data.abils[i].key, data.abils[i].val);
+  }
+  spells_description.value = data.spells_description;
+  spell_values.innerHTML = "";
+  for(let i=0; i<data.spells.length; i++) {
+    add_keyvalue(spell_values, 'spells', 'sp', 'Level', data.spells[i].key, data.spells[i].val);
+  }
+  action_values.innerHTML = "";
+  for(let i=0; i<data.actions.length; i++) {
+    add_keyvalue(action_values, 'action', 'ac', 'Action', data.actions[i].key, data.actions[i].val);
+  }
+  reaction_values.innerHTML = "";
+  for(let i=0; i<data.reactions.length; i++) {
+    add_keyvalue(reaction_values, 'reaction', 'r', 'Reaction', data.reactions[i].key, data.reactions[i].val);
+  }
+  legendary_description.value = data.legendary_description;
+  legendaryaction_values.innerHTML = "";
+  for(let i=0; i<data.legendary_actions.length; i++) {
+    add_keyvalue(legendaryaction_values, 'la', 'la', 'Legendary Action', data.legendary_actions[i].key, data.legendary_actions[i].val);
+  }
+  description_notes.value = data.description_notes;
+}
+
+function update_content(src, dest) {
+  dest.innerHTML = src.value;
+}
+
+function update_card() {
+  let data;
+  try {
+    data = JSON.parse(jsonoutput.value);
+  }
+  catch(e) {
+    show_error("there's a syntax error in your json!");
+    return;
+  }
+
+  let desc_title_out = document.querySelector('.wrapper-out .desc_title_out');
+  let desc_type_out = document.querySelector('.wrapper-out .desc_type_out');
+  let desc_align_out = document.querySelector('.wrapper-out .desc_align_out');
+  let desc_cr_out = document.querySelector('.wrapper-out .desc_cr_out');
+  let phys_out = document.querySelector('.wrapper-out .phys_out');
+  let str_out = document.querySelector('.wrapper-out .str_out');
+  let dex_out = document.querySelector('.wrapper-out .dex_out');
+  let con_out = document.querySelector('.wrapper-out .con_out');
+  let int_out = document.querySelector('.wrapper-out .int_out');
+  let wis_out = document.querySelector('.wrapper-out .wis_out');
+  let cha_out = document.querySelector('.wrapper-out .cha_out');
+  let attrs_out = document.querySelector('.wrapper-out .attrs_out');
+  let abils_out = document.querySelector('.wrapper-out .abils_out');
+  let spells_out_wrapper = document.querySelector('.wrapper-out .spells_out_wrapper');
+  let spells_description_out = document.querySelector('.wrapper-out .spells_description_out');
+  let spells_out = document.querySelector('.wrapper-out .spells_out');
+  let actions_out = document.querySelector('.wrapper-out .actions_out');
+  let actions_out_hdr = document.querySelector('.wrapper-out .actions_out_hdr');
+  let reactions_out = document.querySelector('.wrapper-out .reactions_out');
+  let reactions_out_hdr = document.querySelector('.wrapper-out .reactions_out_hdr');
+  let legendary_out = document.querySelector('.wrapper-out .legendary_out');
+  let legendary_out_hdr = document.querySelector('.wrapper-out .legendary_out_hdr');
+  let legendary_description_out = document.querySelector('.wrapper-out .legendary_description_out');
+  let legendary_actions_out = document.querySelector('.wrapper-out .legendary_actions_out');
+
+  desc_title_out.innerHTML = data.title;
+  desc_type_out.innerHTML = data.type;
+  desc_align_out.innerHTML = data.align;
+  desc_cr_out.innerHTML = data.cr;
+
+  let setopts = function(prefix, outel, data) {
+    outel.innerHTML = '';
+    for(let i=0; i<data.length; i++) {
+      let item = data[i];
+      let opthtml = `
+            <div class='${prefix}${i}'>
+              <strong>${item.key}</strong>
+              ${item.val}
+            </div>
+      `;
+      outel.insertAdjacentHTML('beforeend', opthtml)
+    }
+  };
+
+  setopts('ph_out_', phys_out, data.phys);
+
+  str_out.innerHTML = data.strength;
+  dex_out.innerHTML = data.dexterity;
+  con_out.innerHTML = data.constitution;
+  int_out.innerHTML = data.intelligence;
+  wis_out.innerHTML = data.wisdom;
+  cha_out.innerHTML = data.charisma;
+
+  setopts('at_out_', attrs_out, data.attrs);
+  setopts('ab_out_', abils_out, data.abils);
+
+  if(data.spells.length <= 0 && data.spells_description.length <= 0) {
+    spells_out_wrapper.style.display = 'none';
+    spells_description_out.innerHTML = '';
+    spells_out.innerHTML = '';
+  }
+  else {
+    spells_out_wrapper.style.display = 'block';
+    spells_description_out.innerHTML = data.spells_description;
+    setopts('sp_out_', spells_out, data.spells);
+  }
+
+  if(data.actions.length <= 0) {
+    actions_out.innerHTML = '';
+    actions_out.style.display = 'none';
+    actions_out_hdr.style.display = 'none';
+  }
+  else {
+    actions_out.style.display = 'block';
+    actions_out_hdr.style.display = 'block';
+    setopts('ac_out_', actions_out, data.actions);
+  }
+
+  if(data.reactions.length <= 0) {
+    reactions_out.innerHTML = '';
+    reactions_out.style.display = 'none';
+    reactions_out_hdr.style.display = 'none';
+  }
+  else {
+    reactions_out.style.display = 'block';
+    reactions_out_hdr.style.display = 'block';
+    setopts('re_out_', reactions_out, data.reactions);
+  }
+
+  if(data.legendary_description.length <= 0 && data.legendary_actions.length <= 0) {
+    legendary_out_hdr.style.display = 'none';
+    legendary_description_out.innerHTML = '';
+    legendary_actions_out.innerHTML = '';
+    legendary_out.style.display = 'none';
+  }
+  else {
+    legendary_out_hdr.style.display = 'block';
+    legendary_out.style.display = 'block';
+    legendary_description_out.innerHTML = '';
+    legendary_actions_out.innerHTML = '';
+    legendary_description_out.innerHTML = data.legendary_description;
+    setopts('la_out_', legendary_actions_out, data.legendary_actions);
+  }
+
+  document.getElementsByClassName("wrapper-out2")[0].innerHTML = '';
+  document.getElementsByClassName("wrapper-out2")[0].appendChild(
+    document.getElementsByClassName("wrapper-out")[0].children[0].cloneNode(true)
+  );
+
+  // list of elements in top-to-bottom order
+  let element_order = [
+    '.desc_title_out',
+    '.desc_type_out',
+    '.desc_align_out',
+    '.desc_cr_out',
+    '.phys_out',
+    '.stats',
+  ];
+  for(let i=0; i<attrs_out.children.length; i++) {
+    element_order.push('.'+attrs_out.children[i].className)
+  }
+  for(let i=0; i<abils_out.children.length; i++) {
+    element_order.push('.'+abils_out.children[i].className);
+  }
+  element_order.push('.spells_description_out_wrapper');
+  for(let i=0; i<spells_out.children.length; i++) {
+    element_order.push('.'+spells_out.children[i].className);
+  }
+  element_order.push('.actions_out_hdr');
+  for(let i=0; i<actions_out.children.length; i++) {
+    element_order.push('.'+actions_out.children[i].className);
+  }
+  element_order.push('.reactions_out_hdr');
+  for(let i=0; i<reactions_out.children.length; i++) {
+    element_order.push('.'+reactions_out.children[i].className);
+  }
+  element_order.push('.legendary_out_hdr');
+  element_order.push('.legendary_description_out');
+  for(let i=0; i<legendary_actions_out.children.length; i++) {
+    element_order.push('.'+legendary_actions_out.children[i].className);
+  }
+
+  // TODO: while scroll exists, hide elements from the bottom of
+  // the list in succession. Then I need to get element references
+  // for everything in the mirror and hide everything except for that
+  // which was hidden in the first pass. I think I'll have to switch
+  // to a list of class names...
+
+  let wrapper_out = document.querySelector('.wrapper-out');
+  let wrapper_out2 = document.querySelector('.wrapper-out2 .wrapper-out');
+  let n = element_order.length-1;
+  let style = window.getComputedStyle(wrapper_out, null);
+  let heightstr = style.getPropertyValue("height");
+  let heightint = Number(heightstr.slice(0, heightstr.length-2));
+  //console.log(wrapper_out.scrollHeight + ' > ' + heightint);
+  while(wrapper_out.scrollHeight > heightint) {
+    //console.log(wrapper_out.scrollHeight + ' > ' + heightint);
+    document.querySelector('.wrapper-out ' + element_order[n]).style.display = 'none';
+    n--;
+    if(n <= 0) { break; }
+    style = window.getComputedStyle(wrapper_out, null);
+  }
+  for(let i=0; i<=n; i++) {
+    //console.log('.wrapper-out2 ' + element_order[i])
+    try {
+      let e = document.querySelector('.wrapper-out2 ' + element_order[i]);
+      if(e !== null) { e.style.display = 'none'; }
+    }
+    catch(e) {}
+  }
+  // for page2 if the content on the attribute style wrappers is all
+  // display: none, then hide the wrapper el
+  let hide = function(elcls) {
+    let w2_el = document.querySelector('.wrapper-out2 '+elcls);
+
+    let allnone = true;
+    for(let i=0; i<w2_el.children.length; i++) {
+      if(w2_el.children[i].style.display !== 'none') {
+        allnone = false;
+        break;
+      }
+    }
+    if(allnone) {
+      // hide it completely
+      w2_el.style.display = 'none';
+    }
+  };
+  hide('.phys_out');
+  hide('.attrs_out');
+  hide('.abils_out');
+  //hide('.actions_out');
+  //hide('.reactions_out');
+  //hide('.legendary_out');
+}
+
+
+desc_title.onchange = function(event) { update_json(); update_card(); };
+desc_type.onchange = function(event) { update_json(); update_card(); };
+desc_align.onchange = function(event) { update_json(); update_card(); };
+desc_cr.onchange = function(event) { update_json(); update_card(); };
+strength.onchange = function(event) { update_json(); update_card(); };
+dexterity.onchange = function(event) { update_json(); update_card(); };
+constitution.onchange = function(event) { update_json(); update_card(); };
+intelligence.onchange = function(event) { update_json(); update_card(); };
+wisdom.onchange = function(event) { update_json(); update_card(); };
+charisma.onchange = function(event) { update_json(); update_card(); };
+spells_description.onchange = function(event) { update_json(); update_card(); };
+legendary_description.onchange = function(event) { update_json(); update_card(); };
+description_notes.onchange = function(event) { update_json(); update_card(); };
+let keyvals = document.getElementsByClassName('keyval');
+for(let i=0; i<keyvals.length; i++) {
+  let el = keyvals[i]
+  el.onchange = function(event) { update_json(); update_card(); };
+}
+
+let onloaddata = localStorage.getItem('jsonoutput');
+if(onloaddata !== null) {
+  jsonoutput.value = onloaddata;
+  update_form();
+}
+else {
+  update_json();
+}
+update_card();
+
+
+
+function save_json() {
+  let jsondata = get_json();
+  let file = new Blob([jsondata], {type:'application/json;charset=utf-8'});
+  saveAs(file, desc_title.value+".json");
+}
+
+function load_json(files) {
+  for(let i=0; i<files.length; i++) {
+    let file = files[i];
+    let reader = new FileReader();
+    reader.onload = function(event) {
+      jsonoutput.value = event.target.result;
+      update_form();
+      update_card();
+      localStorage.setItem('jsonoutput', event.target.result);
+    };
+    reader.readAsText(file);
+  }
+}
+
+function clear_page() {
+  localStorage.clear();
+  jsonoutput.value = '{"title":"","type":"","align":"","cr":"","phys":[{"key":"Armor Class","val":"10"},{"key":"Hit Points","val":""},{"key":"Speed","val":"30 ft"}],"strength":"","dexterity":"","constitution":"","intelligence":"","wisdom":"","charisma":"","attrs":[{"key":"Saving Throws","val":""},{"key":"Senses","val":""},{"key":"Languages","val":""}],"abils":[{"key":"","val":""}],"spells":[{"key":"","val":""}],"spells_description":"","actions":[{"key":"","val":""}],"reactions":[{"key":"","val":""}],"legendary_description":"","legendary_actions":[{"key":"","val":""}],"description_notes":""}';
+  update_form();
+  update_card();
+}
+
+newcard.onclick = function(event) { clear_page(); };
+savejson.onclick = function(event) { save_json(); };
+loadjsonfile.onchange = function(event) { load_json(this.files); };
+loadjson.onclick = function(event) { loadjsonfile.click(); };
+
+theversion.innerText = version;
+
+</script>
+</body>
+</html>
