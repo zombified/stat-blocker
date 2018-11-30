@@ -575,23 +575,14 @@ footer {
   </div>
 
   <footer>
-    <div><em><strong>Stat Block Cards</strong> for 5e</em> version <span id='theversion'></span></div>
+    <div><em><strong>Stat Blocker</strong> for 5e</em> version <span id='theversion'></span></div>
     <div>Written and developed by <em><a href='https://joelkleier.com/'>Joel Kleier</a></em></div>
-    <div>Find this utilitie useful? Want to encourage me to improvement? Feel free to throw a few bones my way for beer money! <a href='https://paypal.me/joelkleier'>paypal.me/joelkleier</a></div>
-    <div>The code behind the scenes is <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>Open Source Software (GPLv3)</a>, find it's source code at <a href='https://github.com/zombified/stat-blocker'>github.com/zombified/stat-blocker</a></div>
+    <div>If you're feeling particularly generous, <a href='https://paypal.me/joelkleier'></a></div>
+    <div>The code behind the scenes is <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>Open Source Software (GPLv3)</a>, find it's source code at <a href='https://github.com/zombified/stat-blocker'>github.com/zombified/stat-blocker</a>.</div>
   </footer>
 
 
 <script>
-/*
-
-  1. mirror card html (remove id's from second?)
-  2. get a list of separate elements that are hide-able from top to bottom
-  3. on top card hide one item from the end and check scrollHeight > innerHeight until false
-  4. on bottom card hide elements in list not hidden in step 3
-  5. print break between cards + absolute positioning left/right for back to back printing
-
-*/
 
 function activate_tab(tabname) {
   let htmlcard = document.getElementsByClassName('wrapper-out')[0]
